@@ -346,7 +346,7 @@ window.autosave = function() {
 				};
 
 				$notice = $( '#local-storage-notice' )
-					.insertAfter( $( '.wrap h1, .wrap h2' ).first() )
+					.insertAfter( $( '.wrap' ).children( ':header' ).first() )
 					.addClass( 'notice-warning' )
 					.show();
 

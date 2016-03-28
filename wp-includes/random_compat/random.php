@@ -56,7 +56,7 @@ if (PHP_VERSION_ID < 70000) {
          * 
          * See ERRATA.md for our reasoning behind this particular order
          */
-        if (PHP_VERSION_ID >= 50300 && extension_loaded('libsodium') && function_exists('\\Sodium\\randombytes_buf')) {
+        if (extension_loaded('libsodium')) {
             // See random_bytes_libsodium.php
             require_once $RandomCompatDIR.'/random_bytes_libsodium.php';
         }
@@ -90,23 +90,15 @@ if (PHP_VERSION_ID < 70000) {
             extension_loaded('com_dotnet') &&
             class_exists('COM')
         ) {
-            $RandomCompat_disabled_classes = preg_split(
-                '#\s*,\s*#', 
-                strtolower(ini_get('disable_classes'))
-            );
-            
-            if (!in_array('com', $RandomCompat_disabled_classes)) {
-                try {
-                    $RandomCompatCOMtest = new COM('CAPICOM.Utilities.1');
-                    if (method_exists($RandomCompatCOMtest, 'GetRandom')) {
-                        // See random_bytes_com_dotnet.php
-                        require_once $RandomCompatDIR.'/random_bytes_com_dotnet.php';
-                    }
-                } catch (com_exception $e) {
-                    // Don't try to use it.
+            try {
+                $RandomCompatCOMtest = new COM('CAPICOM.Utilities.1');
+                if (method_exists($RandomCompatCOMtest, 'GetRandom')) {
+                    // See random_bytes_com_dotnet.php
+                    require_once $RandomCompatDIR.'/random_bytes_com_dotnet.php';
                 }
+            } catch (com_exception $e) {
+                // Don't try to use it.
             }
-            $RandomCompat_disabled_classes = null;
             $RandomCompatCOMtest = null;
         }
         if (
